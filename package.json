@@ -1,0 +1,27 @@
+{
+  "name": "fis-parser-sass-bin",
+  "version": "1.0.0",
+  "description": "a plugin for fis to compile sass using node-sass-binaries",
+  "main": "index.js",
+  "scripts": {
+    "install": "node scripts/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fis-stuff/fis-parser-sass-bin.git"
+  },
+  "keywords": [
+    "fis",
+    "parser",
+    "sass"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fis-stuff/fis-parser-sass-bin/issues"
+  },
+  "homepage": "https://github.com/fis-stuff/fis-parser-sass-bin#readme",
+  "dependencies": {
+    "lodash.clonedeep": "^4.4.0"
+  }
+}

@@ -1,0 +1,300 @@
+@charset "utf-8";
+
+// 常用字体
+$font-yahei:'\5fae\8f6f\96c5\9ed1';
+$font-verdana:verdana;
+$font-songti:'\5B8B\4F53';
+
+// 常用颜色
+$colorMain:#1b1b1b;     //普通字黑色
+$colorGray: #666;       //灰色
+$colorSuccess:#71b247;  //成功绿色
+$colorWarn:#f89406;     //警告黄色
+$colorDanger:#f24d4d;   //危险红色
+$colorRed: #fd7272;     //主色红色
+
+// 
+$mainWidth: 1210px;
+
+// css3 global prefix setting
+$prefix-for-webkit: true !default;
+$prefix-for-mozilla: true !default;
+$prefix-for-microsoft: true !default;
+$prefix-for-opera: true !default;
+$prefix-for-spec: true !default;
+
+@mixin disable-prefix-for-all() {
+    $prefix-for-webkit: false;
+    $prefix-for-mozilla: false;
+    $prefix-for-microsoft: false;
+    $prefix-for-opera: false;
+    $prefix-for-spec: false;
+}
+
+@mixin enable-prefix-for-all() {
+    $prefix-for-webkit: true;
+    $prefix-for-mozilla: true;
+    $prefix-for-microsoft: true;
+    $prefix-for-opera: true;
+    $prefix-for-spec: true;
+}
+
+@mixin prefixer($property, $value, $prefixes) {
+    @each $prefix in $prefixes {
+        @if $prefix == webkit and $prefix-for-webkit == true {
+            -webkit-#{$property}: $value;
+        }
+        @else if $prefix == moz and $prefix-for-mozilla == true {
+            -moz-#{$property}: $value;
+        }
+        @else if $prefix == ms and $prefix-for-microsoft == true {
+            -ms-#{$property}: $value;
+        }
+        @else if $prefix == o and $prefix-for-opera == true {
+            -o-#{$property}: $value;
+        }
+        @else if $prefix == spec and $prefix-for-spec == true {
+            #{$property}: $value;
+        }
+        @else {
+            @warn "Unrecognized prefix: #{$prefix}";
+        }
+    }
+}
+
+// Adds keyframes blocks for supported prefixes, removing redundant prefixes in the block's content
+// 
+// prefix:
+// webkit moz spec
+// 
+// example:
+// @include keyframes(pulse, webkit moz spec){
+//     0% {
+//         opacity: 1;   
+//         @include transform(scale(1));
+//     }
+//     50% {
+//         opacity: 0.7;   
+//         @include transform(scale(0.9));
+//     }
+//     100% {
+//         opacity: 1;   
+//         @include transform(scale(1));
+//     }
+// };
+@mixin keyframes($name, $prefixes) {
+    $original-prefix-for-webkit: $prefix-for-webkit;
+    $original-prefix-for-mozilla: $prefix-for-mozilla;
+    $original-prefix-for-microsoft: $prefix-for-microsoft;
+    $original-prefix-for-opera: $prefix-for-opera;
+    $original-prefix-for-spec: $prefix-for-spec;
+
+    @each $prefix in $prefixes {
+        @if $prefix == webkit and $original-prefix-for-webkit == true {
+            @include disable-prefix-for-all();
+            $prefix-for-webkit: true;
+            @-webkit-keyframes #{$name} {
+                @content;
+            }
+        }
+        @if $prefix == moz and $original-prefix-for-mozilla == true {
+            @include disable-prefix-for-all();
+            $prefix-for-mozilla: true;
+            @-moz-keyframes #{$name} {
+                @content;
+            }
+        }
+        @if $prefix == ms and $original-prefix-for-microsoft == true {
+            @include disable-prefix-for-all();
+            $prefix-for-microsoft: true;
+            @-ms-keyframes #{$name} {
+                @content;
+            }
+        }
+        @if $prefix == o and $original-prefix-for-opera == true {
+            @include disable-prefix-for-all();
+            $prefix-for-opera: true;
+            @-o-keyframes #{$name} {
+                @content;
+            }
+        }
+        @if $prefix == spec {
+            @include disable-prefix-for-all();
+            $prefix-for-spec: true;
+            @keyframes #{$name} {
+                @content;
+            }
+        }
+    }
+
+    $prefix-for-webkit: $original-prefix-for-webkit;
+    $prefix-for-mozilla: $original-prefix-for-mozilla;
+    $prefix-for-microsoft: $original-prefix-for-microsoft;
+    $prefix-for-opera: $original-prefix-for-opera;
+    $prefix-for-spec: $original-prefix-for-spec;
+}
+
+// transform
+// 
+// example:
+// @include transform(rotate(-4deg));
+// @include transform(rotate(-4deg) translate(6px, 18px) scale(1));
+@mixin transform($property: none) {
+    //  none | <transform-function>
+    @include prefixer(transform, $property, webkit moz spec);
+}
+
+// transform-origi
+// 
+// example:
+// @include transform-origin(center bottom 0);
+// @include transform-origin(505, 50%);
+@mixin transform-origin($axes: 50%) {
+    // x-axis - left | center | right  | length | %
+    // y-axis - top  | center | bottom | length | %
+    // z-axis -                          length
+    @include prefixer(transform-origin, $axes, webkit moz spec);
+}
+
+@mixin transform-style($style: flat) {
+    @include prefixer(transform-style, $style, webkit moz spec);
+}
+
+// animation
+// 
+// example:
+// @include animation(pop_move_1 6s infinite);
+@mixin animation($animations...) {
+    @include prefixer(animation, $animations, webkit moz spec);
+}
+
+// animation-delay
+// 
+// example:
+// @include animation-delay(0.2s);
+@mixin animation-delay ($times...) {
+    @include prefixer(animation-delay, $times, webkit moz spec);
+}
+
+// transition
+// 
+// example:
+// @include transition(all 0.2s ease-in-out, opacity 1s);
+@mixin transition ($properties...) {
+    @if length($properties) >= 1 {
+        @include prefixer(transition, $properties, webkit moz spec);
+    }
+    @else {
+        $properties: all 0.15s ease-out;
+        @include prefixer(transition, $properties, webkit moz spec);
+    }
+}
+
+// css3 transition 闪屏bug修复
+@mixin trans-fix() {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+// opacity
+@mixin opacity($o: 70) {
+    filter: alpha(opacity=$o);
+    -moz-opacity: $o / 100;
+    opacity: $o / 100;
+}
+
+// boxSizing
+@mixin box-sizing($sizing) {
+    -webkit-box-sizing: $sizing;
+    -moz-box-sizing: $sizing;
+    box-sizing: $sizing;
+}
+
+// boxShadow
+@mixin box-shadow($x: 0, $y: 3px, $blur: 5px, $alpha: 0.5) {
+    -webkit-box-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    -moz-box-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    -o-box-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    box-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+}
+
+// textShadow
+@mixin text-shadow($x: 0, $y: 1px, $blur: 2px, $alpha: 0.5) {
+    -webkit-text-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    -moz-text-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    -o-text-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+    text-shadow: $x $y $blur rgba(0, 0, 0, $alpha);
+}
+
+// @ 圆角
+@mixin border-radius($r...){
+    -webkit-border-radius: $r;
+    -moz-border-radius: $r;
+    border-radius: $r;
+}
+
+// @ 颜色渐变
+// @ type{String:开始颜色，结束颜色}
+@mixin linear-gradient($s:#f8f8f8, $e:#ebebeb){
+    background-color:$s;
+    background-image: -moz-linear-gradient(top, $s,$e);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, $s), color-stop(1, $e));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$s}', endColorstr='#{$e}', GradientType='0');
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$s}', endColorstr='#{$e}');
+    background-image: linear-gradient(to top, $s 0%, $e 100%);
+}
+
+// @ 响应式 最小宽
+// @ type{String:最小宽，类名}
+@mixin mediaMin($w, $class){
+    @media screen and(min-width: #{$w}){
+        @content;
+    }
+    .#{$class}{
+        @content;
+    }
+}
+
+//
+// @ 响应式 最大宽
+// @ type{String:最大宽，类名}
+//
+@mixin mediaMax($w, $class){
+    @media screen and(max-width: #{$w}){
+        @content;
+    }
+    .#{$class}{
+        @content;
+    }
+}
+
+//
+// @ 响应式 区间宽
+// @ type{String:最小宽，最大宽，类名}
+//
+@mixin mediaMinMax($minw, $maxw, $class){
+    @media screen and(min-width: #{$minw}) and(max-width: #{$maxw}){
+        @content;
+    }
+    .#{$class}{
+        @content;
+    }
+}
+
+//
+// @ 单行文本，超出显示...
+//
+@mixin singleline() {
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+
+//
+// @ 多行文本 ，强制换行
+//
+@mixin multiline() {
+    word-wrap: break-word;
+    white-space: normal;
+}
