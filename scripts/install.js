@@ -40,7 +40,7 @@ var download = function(url, dest, cb) {
 
 
 //"+process.versions.modules
-var version_modules = [11, 14, 42, 43, 44, 45, 46, 47];
+var version_modules = [11, 14, 42, 43, 44, 45, 46, 47, 48];
 
 for (var i in version_modules) {
     (function(moduleVer) {

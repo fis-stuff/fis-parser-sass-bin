@@ -1,6 +1,6 @@
 {
   "name": "fis-parser-sass-bin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a plugin for fis to compile sass using node-sass-binaries",
   "main": "index.js",
   "scripts": {
